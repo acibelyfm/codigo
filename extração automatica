@@ -1,0 +1,100 @@
+
+import os
+from numpy import nan, nan_to_num
+import pandas as pd
+from sqlalchemy import create_engine
+import pyodbc as sql
+import sqlalchemy as Bank
+from datetime import datetime
+import psycopg2 as post
+
+
+##Conexão com o POSTGRESQL
+def connection_postgres():
+    host =  #declara o ip do servidor 
+    db=  # declara o banco de dados
+    user =   #declara o usuario
+    pwd =   #declara a senha
+    driver = 
+    con_post = post.connect(host=host, database=db, user=user, password=pwd) #cria a conexão com o banco de dados post
+    return con_post
+
+
+def print_mensagem(mensagem, data_arquivo):
+    print(mensagem," " ,datetime.now())
+    escrever_arquivo_log(mensagem + " "  + str(datetime.now()), data_arquivo)
+
+def escrever_arquivo_log(mensagem_texto, data_arquivo):
+    arquivo = open( arquivo_log , "a+", encoding="UTF-8")
+    arquivo.write(mensagem_texto + "\n")
+    arquivo.close()
+
+def exclusao(arquivo):
+    path = os.getcwd()
+    dir = os.listdir(path)
+    for file in dir:
+        if file == arquivo:
+            shutil.move(diretorio_arquivo_relatorio  +"\\" + arquivo_relatorio, "G:\\local do arquivo\\" + diretorio_arquivo_relatorio  +"\\" + arquivo_relatorio)
+
+
+data_arquivo = str(datetime.now()).replace(":","").replace(".","").replace("-","").replace(" ","")[0:12]
+
+arquivo_log= 'LOG_REL_arquivo'+ data_arquivo + '.txt'
+
+diretorio_arquivo_relatorio = os.getcwd()
+
+arquivo_relatorio = 'REL_FATO_Rarquivo'+ data +'.CSV' 
+print (diretorio_arquivo_relatorio )
+
+hora = datetime.now().hour
+
+print_mensagem("Executando  o processo:", data_arquivo)
+
+print_mensagem("Abrindo Conexão com o Banco de dados Postgresql:", data_arquivo)
+
+## chama a conexão com o BI
+con_post = connection_postgres()
+cur_post = con_post.cursor()
+
+print_mensagem("Cria a consulta de select que será realizada no automacao:", data_arquivo)
+query  = """ select 
+from 
+WHERE """ 
+
+
+#where = comando para filtrar dados 
+#between para retornar linhas baseadas em uma faixa de valores ou datas " data_nascimento between '01/01/1900' and '30/11/2021' "
+# in para retornar linhas cujos valores correspondem
+# not in para os que não correspondem
+# inner join conectar 2 tabelas SELECT A.VALOR
+                                    #  B.VALOR
+                            #  FROM TABELA1 A  
+                            #  INNER JOIN TABELA2 B ON B.ID = A.ID
+#  CASE  
+#   WHEN MIN(VALOR) <= 0 THEN 'NEGATIVO'   
+#   WHEN MAX(VALOR) >= 100 THEN 'POSITIVO'    
+#END
+#FROM TABELA
+
+
+
+#print(query)
+#Executa a conexão e a query
+df_titulo = pd.read_sql(query, con_post) 
+df_titulo.replace({nan:None},inplace=True)
+
+
+#Convert para uma coluna texto e formata a informação para decimal
+df_titulo['valor'] = df_titulo['valor'].apply(lambda x: str(x).replace(".",",")))
+
+#exportar o arquivo em csv
+print_mensagem("Exportando o arquivo csv:", data_arquivo)
+df_titulo.to_csv( arquivo_relatorio , sep=';', index=False)
+
+print_mensagem("Exclusão do arquivo  gerado de log:", data_arquivo)
+
+##Realiza commit na conexão
+con_post.commit()
+cur_post.close()
+con_post.close()
+print_mensagem("Fechou a conexão com o Banco de dados após a inserção:", data_arquivo)

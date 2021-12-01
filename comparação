@@ -1,0 +1,72 @@
+
+import pyodbc
+import pandas as pd
+import psycopg2
+import os
+from numpy import nan, nan_to_num
+import pandas as pd
+import pyodbc as sql
+import sqlalchemy as Bank
+from datetime import datetime
+from decimal import Decimal
+import locale
+import win32com.client as win32
+import sys
+import shutil
+
+##Conexão com o PostgreSQL
+def conectaBanco():
+    """ Connect to the PostgreSQL database server """
+    conn = None
+    try:
+        conn = psycopg2.connect(**{
+            'host': '  ',
+            'database': '  ', 
+            'user': '   ', 
+            'password': ' '})
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        raise error
+    return conn
+
+
+##Conexão com o SQL SERVER
+def connection_SQL_BI():
+    server_bi = '  ' 
+    database_bi = ' '
+    username_bi = ' ' 
+    password_bi = ' ' 
+    con_sql_bi = sql.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server_bi+';DATABASE='+database_bi+';UID='+username_bi+';PWD='+ password_bi)
+    return con_sql_bi
+
+
+query= """select *
+from tabela1"""
+df = pd.read_sql(query,conectaBanco())
+
+print(df)
+
+queryjde= """select *
+from tabela2"""
+df1 = pd.read_sql(queryjde,connection_SQL_BI())
+
+print(df1)
+
+df3 = pd.concat([df, df1])
+print (df3)
+
+db = pd.merge(df1, df, on=['an8'], how='right', suffixes=('_A','_B'))
+db['tabelaB'].isnull().sum()
+
+dt = pd.merge(df1, df, on=['an8'], how='left', suffixes=('_A','_B'))
+dt['tabelaB'].isnull().sum()
+
+db[db['tabelaB'].isnull()]
+
+dt[dt['tabelaB'].isnull()]
+
+cnpj = dt[dt['tabelaB'].isnull()]
+cnpj.to_csv('C:/Users/User/Documents/nome.csv')
+
+banco = db[db['tabelaB'].isnull()]
+banco.to_csv('C:/Users/User/Documents/nome.csv')

@@ -1,0 +1,17 @@
+SELECT Produto
+,ID
+,Name
+,Sobrenome
+,email
+,titulo
+,preço
+      CASE   
+         WHEN preço =  0 THEN 'zerado'  
+         WHEN preço < 50 THEN 'baixo'  
+         WHEN preço >= 50 and preço < 250 THEN 'medio'  
+         WHEN preço >= 250 and preço < 1000 THEN 'alto'  
+         ELSE 'muito alto'  
+      END  
+FROM tabela  
+ORDER BY Produto 
+limit 20;  
